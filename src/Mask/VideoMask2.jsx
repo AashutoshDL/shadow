@@ -34,7 +34,6 @@ const VideoMask2 = () => {
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
-            const sizes = new Float32Array(particleCount);
 
             for (let i = 0; i < particleCount; i++) {
                 positions[i * 3] = (Math.random() - 0.5) * 10;
@@ -44,24 +43,18 @@ const VideoMask2 = () => {
                 colors[i * 3] = Math.random();  // Red channel
                 colors[i * 3 + 1] = Math.random(); // Green channel
                 colors[i * 3 + 2] = Math.random(); // Blue channel
-                
-                // Assign random size to each particle
-                sizes[i] = Math.random() * 2 + 1; // Size between 1 and 3
             }
 
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-            // Use a texture for a cartoon-like effect
-            const particleTexture = new THREE.TextureLoader().load('/path/to/your/cartoon-particle.png'); // Replace with your texture path
             const material = new THREE.PointsMaterial({
-                sizeAttenuation: true,
-                size: 1, // Base size of particles
+                size: 0.05, // Increased size for better glow
                 vertexColors: true,
-                map: particleTexture,
-                alphaTest: 0.5,
                 transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
             });
 
             const pointCloud = new THREE.Points(geometry, material);
@@ -72,7 +65,7 @@ const VideoMask2 = () => {
 
             const bloomPass = new UnrealBloomPass(
                 new THREE.Vector2(window.innerWidth, window.innerHeight),
-                1.2, // Increased bloom strength
+                0.8, // Increased bloom strength
                 0.4,
                 0.85 // Radius of the bloom for a soft glow
             );
@@ -139,7 +132,7 @@ const VideoMask2 = () => {
                 setTimeout(() => {
                     detect();
                     throttledDetect();
-                }, 100); // Increased timeout for better performance
+                }, 1);
             };
 
             throttledDetect();
